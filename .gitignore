@@ -1,32 +1,40 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
+build
+*.pyc
+*~
+*#
+.DS_Store
+.project
+.settings
+.classpath
+.metadata
 *.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
 *.a
-*.lib
+*.pyc
+*.err
+*.log
+.lock-waf*
+.waf-*
+.waf3-*
+waf_xcode.sh
+exp
+src/tests/combinations
+params_*
+benchmark_results
+__pycache__
+.vscode
 
-# Executables
-*.exe
-*.out
-*.app
+# Ignored folders for the documentation
+_build
+doxygen_doc
+docs/defaults.rst
+
+# Ignored folders/files of the paper
+paper.pdf
+paper.xml
+
+/*.dat
+/*.bin
+/*.txt
+*.png
+*.jpg
+*.html

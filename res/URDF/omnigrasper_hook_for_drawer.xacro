@@ -1,0 +1,472 @@
+<?xml version="1.0" ?>
+
+<robot name="omnigrasper" xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:property name="joint1_vel" value="1.0"/>
+  <xacro:property name="joint2_vel" value="1.0"/>
+  <xacro:property name="joint3_vel" value="1.0"/>
+  <xacro:property name="joint4_vel" value="1.0"/>
+  <xacro:property name="joint5_vel" value="1.0"/>
+
+  <xacro:property name="joint1_effort" value="5.0"/>
+  <xacro:property name="joint2_effort" value="44.0"/>
+  <xacro:property name="joint3_effort" value="44.0"/>
+  <xacro:property name="joint4_effort" value="44.0"/>
+  <xacro:property name="joint5_effort" value="20.0"/>
+
+  <xacro:property name="joint1_min" value="${-pi/6}"/>
+  <xacro:property name="joint1_max" value="${pi/6}"/>
+
+  <xacro:property name="joint2_min" value="${-pi/6}"/>
+  <xacro:property name="joint2_max" value="${pi/3}"/>
+
+  <xacro:property name="joint3_min" value="${-pi/4}"/>
+  <xacro:property name="joint3_max" value="${pi/2 + pi/4}"/>
+
+  <xacro:property name="joint4_min" value="${-pi/100}"/>
+  <xacro:property name="joint4_max" value="${pi/100}"/>
+
+  <xacro:property name="joint5_min" value="${-pi/4}"/>
+  <xacro:property name="joint5_max" value="${pi/2}"/>
+
+
+  <material name="omni/Blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+  <material name="omni/Red">
+    <color rgba="1 0 0 1"/>
+  </material>
+  <material name="omni/Green">
+    <color rgba="0 1 0 1"/>
+  </material>
+  <material name="omni/Yellow">
+    <color rgba="1 1 0 1"/>
+  </material>
+  <material name="omni/LightGrey">
+    <color rgba="0.6 0.6 0.6 1"/>
+  </material>
+  <material name="omni/DarkGrey">
+    <color rgba="0.4 0.4 0.4 1"/>
+  </material>
+  
+  <link name="base_link">
+  </link>
+  <joint name="base_link_arm_base" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_base"/>
+    <origin rpy="0 0 0" xyz="0 0 0.004"/>
+  </joint>
+  <link name="arm_base"/>
+  <joint name="arm_base_arm_0" type="fixed">
+    <parent link="arm_base"/>
+    <child link="arm_0"/>
+    <origin xyz="0 0 0.141" rpy="0 0 3.14159265359"/>
+  </joint>
+  <link name="arm_0">
+    <!-- L54-30-S500 -->
+    <visual>
+      <origin rpy="1.57079632679 0 0" xyz="0 0 -0.141"/>
+      <geometry>
+        <mesh filename="../arm_meshes/L54-30-S500-R.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Blue"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 -0.087"/>
+      <geometry>
+        <box size="0.054 0.054 0.108"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="arm_0_1" type="fixed">
+    <parent link="arm_0"/>
+    <child link="arm_1"/>
+    <dynamics damping="0.25" friction="0.183333333"/>
+    <limit effort="${joint1_effort}" lower="${joint1_min}" upper="${joint1_max}" velocity="${joint1_vel}"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="arm_1">
+    <!-- For Box Collision Intertial -->
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.054 0.132 0.054"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.855"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="0.001449225" ixy="0" ixz="0" iyy="0.00041553" iyz="0" izz="0.001449225"/>
+    </inertial>
+    <!-- H54-200-S500 -->
+    <visual>
+      <origin xyz="0 -0.066 0"/>
+      <geometry>
+        <mesh filename="../arm_meshes/H54-200-S500-R.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Red"/>
+    </visual>
+    <!-- FRP54-A110 -->
+    <visual>
+      <origin rpy="1.57079632679 0 0" xyz="0 0 -0.033"/>
+      <geometry>
+        <mesh filename="../arm_meshes/FRP54-A110.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Red"/>
+    </visual>
+  </link>
+  <joint name="arm_1_2" type="revolute">
+    <parent link="arm_1"/>
+    <child link="arm_2_prev"/>
+    <dynamics damping="4.47" friction="3.278"/>
+    <limit effort="${joint2_effort}" lower="${joint2_min}" upper="${joint2_max}" velocity="${joint2_vel}"/>
+    <origin rpy="1.57079632679 -1.57079632679 0" xyz="0 0 0"/>
+    <axis xyz="0 0 -1"/>
+  </joint>
+  <link name="arm_2_prev">
+    <!-- For Box Collision Intertial -->
+    <collision>
+      <origin rpy="0 0 0" xyz="0.0255 0 0"/>
+      <geometry>
+        <box size="0.054 0.054 0.15"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0.0255 0 0"/>
+      <mass value="1e-05"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="2.118e-08" ixy="0" ixz="0" iyy="2.118e-08" iyz="0" izz="4.86e-09"/>
+    </inertial>
+  </link>
+  <joint name="arm_2_prev_2" type="fixed">
+    <parent link="arm_2_prev"/>
+    <child link="arm_2"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <link name="arm_2">
+    <!-- For Box Visual Collision Intertial -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0.141 0 0"/>
+      <geometry name="profile_2">
+        <box size="0.18 0.04 0.04"/>
+      </geometry>
+      <material name="omni/Green"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.141 0 0"/>
+      <geometry>
+        <box size="0.18 0.04 0.04"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0.141 0 0"/>
+      <mass value="0.2484"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="6.624e-05" ixy="0" ixz="0" iyy="0.0007038" iyz="0" izz="0.0007038"/>
+    </inertial>
+    <!-- FRP54-H220 -->
+    <visual>
+      <origin rpy="0 3.14159265359 -1.57079632679" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="../arm_meshes/FRP54-H220.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Green"/>
+    </visual>
+    <!-- FRP54-A110 -->
+    <visual>
+      <origin rpy="0 0 -1.57079632679" xyz="0.231 0 0"/>
+      <geometry>
+        <mesh filename="../arm_meshes/FRP54-A110.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Green"/>
+    </visual>
+  </link>
+  <joint name="arm_2_sub" type="fixed">
+    <parent link="arm_2"/>
+    <child link="arm_2_sub"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+  <link name="arm_2_sub">
+    <!-- L5450-S500 -->
+    -
+
+    <!-- For Box Collision Intertial -->
+    <collision>
+      <origin rpy="0 0 0" xyz="0.264 0 0"/>
+      <geometry>
+        <box size="0.054 0.054 0.114"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0.264 0 0"/>
+      <mass value="0.662"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="0.000877812" ixy="0" ixz="0" iyy="0.000877812" iyz="0" izz="0.000321732"/>
+    </inertial>
+    <visual>
+      <origin rpy="-1.57079632679 0 0" xyz="0.264 0 0.057"/>
+      <geometry>
+        <mesh filename="../arm_meshes/L54-50-S500-R.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Green"/>
+    </visual>
+  </link>
+  <joint name="arm_2_3" type="revolute">
+    <parent link="arm_2"/>
+    <child link="arm_3_prev"/>
+    <dynamics damping="2.0" friction="1.02666666667"/>
+    <limit effort="${joint3_effort}" lower="${joint3_min}" upper="${joint3_max}" velocity="${joint3_vel}"/>
+    <origin rpy="0 0 -1.57079632679" xyz="0.264 0 0"/>
+    <axis xyz="0 0 -1"/>
+  </joint>
+  <link name="arm_3_prev">
+    <!-- For Box Collision Intertial -->
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0.0255 0"/>
+      <geometry>
+        <box size="0.054 0.054 0.124"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0 0.0255 0"/>
+      <mass value="1e-05"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="1.52433333333e-08" ixy="0" ixz="0" iyy="1.52433333333e-08" iyz="0" izz="4.86e-09"/>
+    </inertial>
+  </link>
+  <joint name="arm_3_prev_3" type="fixed">
+    <parent link="arm_3_prev"/>
+    <child link="arm_3"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <link name="arm_3">
+    <!-- For Box Visual Collision Intertial -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0.081 0"/>
+      <geometry name="profile_3">
+        <box size="0.04 0.06 0.04"/>
+      </geometry>
+      <material name="omni/Yellow"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0.081 0"/>
+      <geometry>
+        <box size="0.04 0.06 0.04"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0 0.081 0"/>
+      <mass value="0.0828"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="3.588e-05" ixy="0" ixz="0" iyy="2.208e-05" iyz="0" izz="3.588e-05"/>
+    </inertial>
+    <!-- FRP54-H120 -->
+    <visual>
+      <origin rpy="0 3.14159265359 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="../arm_meshes/FRP54-H120.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Yellow"/>
+    </visual>
+    <!-- FRP54-A110 -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0.111 0"/>
+      <geometry>
+        <mesh filename="../arm_meshes/FRP54-A110.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Yellow"/>
+    </visual>
+  </link>
+  <joint name="arm_3_sub" type="fixed">
+    <parent link="arm_3"/>
+    <child link="arm_3_sub"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+  <link name="arm_3_sub">
+    <!-- For Box Collision Intertial -->
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0.171 0"/>
+      <geometry>
+        <box size="0.054 0.108 0.054"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0 0.171 0"/>
+      <mass value="0.612"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="0.00074358" ixy="0" ixz="0" iyy="0.000297432" iyz="0" izz="0.00074358"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 -3.14159265359 0" xyz="0 0.117 0"/>
+      <geometry>
+        <mesh filename="../arm_meshes/L54-30-S500-R.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Yellow"/>
+    </visual>
+  </link>
+  <joint name="arm_3_4" type="fixed">
+    <parent link="arm_3"/>
+    <child link="arm_4"/>
+    <dynamics damping="0.25" friction="0.183333333"/>
+    <limit effort="${joint4_effort}" lower="${joint4_min}" upper="${joint4_max}" velocity="${joint4_vel}"/>
+    <origin rpy="-1.57079632679 0 0" xyz="0 0.252 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="arm_4">
+    <!-- For Box Collision Intertial -->
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0.006 0"/>
+      <geometry>
+        <box size="0.042 0.072 0.042"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0 0.006 0"/>
+      <mass value="0.257"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="0.000148803" ixy="0" ixz="0" iyy="7.5558e-05" iyz="0" izz="0.000148803"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 -0.03 0"/>
+      <geometry>
+        <mesh filename="../arm_meshes/L42-10-S300-R.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/DarkGrey"/>
+    </visual>
+    <!-- FRP42-A110 -->
+    <visual>
+      <origin rpy="1.57079632679 0 0" xyz="0 0 -0.027"/>
+      <geometry>
+        <mesh filename="../arm_meshes/FRP42-A110.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/DarkGrey"/>
+    </visual>
+  </link>
+  <joint name="arm_4_5" type="fixed">
+    <parent link="arm_4"/>
+    <child link="arm_5"/>
+    <dynamics damping="0.12" friction="0.183333333"/>
+    <limit effort="${joint5_effort}" lower="${joint5_min}" upper="${joint5_max}" velocity="${joint5_vel}"/>
+    <origin rpy="1.57079632679 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 -1"/>
+  </joint>
+  <link name="arm_5">
+    <!-- For Box Collision Intertial -->
+    <collision>
+      <origin rpy="0 0 0" xyz="0.0 0.018 -0.006"/>
+      <geometry>
+        <box size="0.042 0.042 0.073"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0.0 0.018 -0.006"/>
+      <mass value="0.0857"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="5.06558416667e-05" ixy="0" ixz="0" iyy="5.06558416667e-05" iyz="0" izz="2.51958e-05"/>
+    </inertial>
+    <!-- FRP42-H120 -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 -0.006"/>
+      <geometry>
+        <mesh filename="../arm_meshes/FRP42-H120.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Blue"/>
+    </visual>
+  </link>
+  <joint name="arm_5_end" type="fixed">
+    <parent link="arm_5"/>
+    <child link="arm_link"/>
+    <origin xyz="0 0.039 -0.006"/>
+  </joint>
+  <link name="arm_link">
+    <!-- For Box Visual Collision Intertial -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0.065 0"/>
+      <geometry name="end_effector">
+        <box size="0.02 0.13 0.025"/>
+      </geometry>
+      <material name="omni/Red"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0.065 0"/>
+      <geometry>
+        <box size="0.02 0.13 0.025"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0 0.065 0"/>
+      <mass value="0.06"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="8.7625e-05" ixy="0" ixz="0" iyy="5.125e-06" iyz="0" izz="8.65e-05"/>
+    </inertial>
+    <!-- left hook interface -->
+    <visual>
+      <origin rpy="0 1.57079632679 0" xyz="-0.021 0 0.035"/>
+      <geometry>
+        <mesh filename="../arm_meshes/HookInterface.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Red"/>
+    </visual>
+    <!-- right hook interface -->
+    <visual>
+      <origin rpy="0 -1.57079632679 0" xyz="0.021 0 -0.035"/>
+      <geometry>
+        <mesh filename="../arm_meshes/HookInterface.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="omni/Red"/>
+    </visual>
+  </link>
+  <joint name="arm_hook" type="fixed">
+    <parent link="arm_link"/>
+    <child link="arm_link2"/>
+    <origin rpy="0 0 0" xyz="0 0.13 0"/>
+  </joint>
+  <link name="arm_link2">
+    <!-- For Box Visual Collision Intertial -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0.025 0 0"/>
+      <geometry name="end_effector_2">
+        <box size="0.07 0.02 0.025"/>
+      </geometry>
+      <material name="omni/Red"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.025 0 0"/>
+      <geometry>
+        <box size="0.07 0.02 0.025"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0.025 0 0"/>
+      <mass value="0.04"/>
+      <!-- box inertia: 1/12*m(y^2+z^2), ... -->
+      <inertia ixx="3.41666666667e-06" ixy="0" ixz="0" iyy="1.84166666667e-05" iyz="0" izz="1.76666666667e-05"/>
+    </inertial>
+  </link>
+  <joint name="arm_end_eff" type="fixed">
+    <parent link="arm_link2"/>
+    <child link="end_eff"/>
+    <origin rpy="-1.57079632679 3.14159265359 0" xyz="0.06 0 0"/>
+  </joint>
+  <link name="end_eff">
+    <inertial>
+      <!-- center of mass -->
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1e-6"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+</robot>

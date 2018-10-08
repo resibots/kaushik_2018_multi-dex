@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+import limbo
+import glob
+from waflib import Logs
+
+def build(bld):
+    dart_libs = 'TBB EIGEN BOOST LIMBO NLOPT SFERES2 BOOST_CHRONO RT DART BOOST_DART THREADS OPENCV '
+    dart_libs_graphic = dart_libs + 'DART_GRAPHIC'
+
+    path = bld.path.abspath()[:-len('src/dart')] + 'res'
+
+    cxxflags = bld.get_env()['CXXFLAGS']
+    cxxflags.remove('-std=c++11')
+    cxxflags.append('-std=c++14')
+
+    if bld.get_env()['BUILD_GRAPHIC'] == True: #i.e not on cluster
+        cxxflags.append('-DCONSOLE')
+
+    
+    limbo.create_variants(bld,
+                        source='drawer_opening_2dof.cpp',
+                        includes='. ../../../../src ../ ../../include ../../deps/sferes2 ../../deps/limbo/src ../../deps/robot_dart/include ../../include/tiny-dnn',
+                        target='drawer_opening_2dof',
+                        uselib=dart_libs,
+                        uselib_local='limbo',
+                        cxxflags = cxxflags + ['-DRESPATH="' + path + '"'],
+                        variants = ['SIMU'])
+    
+    limbo.create_variants(bld,
+                        source='sequential_goal_reaching_2dof.cpp',
+                        includes='. ../../../../src ../ ../../include ../../deps/sferes2 ../../deps/limbo/src ../../deps/robot_dart/include',
+                        target='sequential_goal_reaching_2dof',
+                        uselib=dart_libs,
+                        uselib_local='limbo',
+                        cxxflags = cxxflags + ['-DRESPATH="' + path + '"'],
+                        variants = ['SIMU'])
+
+
+    if bld.get_env()['BUILD_GRAPHIC'] == True:
+
+        limbo.create_variants(bld,
+                          source='drawer_opening_2dof.cpp',
+                          includes='. ../../../../src ../ ../../include ../ ../../deps/sferes2 ../../deps/limbo/src ../../deps/robot_dart/include',
+                          target='drawer_opening_2dof',
+                          uselib=dart_libs_graphic,
+                          uselib_local='limbo',
+                          cxxflags = cxxflags + ['-DRESPATH="' + path + '"'],
+                          variants = ['GRAPHIC'])
+        
+        limbo.create_variants(bld,
+                          source='sequential_goal_reaching_2dof.cpp',
+                          includes='. ../../../../src ../ ../../include ../ ../../deps/sferes2 ../../deps/limbo/src ../../deps/robot_dart/include',
+                          target='sequential_goal_reaching_2dof',
+                          uselib=dart_libs_graphic,
+                          uselib_local='limbo',
+                          cxxflags = cxxflags + ['-DRESPATH="' + path + '"'],
+                          variants = ['GRAPHIC'])
+
+
+    

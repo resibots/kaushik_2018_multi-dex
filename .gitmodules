@@ -1,0 +1,9 @@
+[submodule "deps/limbo"]
+	path = deps/limbo
+	url = https://github.com/resibots/limbo.git
+[submodule "deps/sferes2"]
+	path = deps/sferes2
+	url = https://github.com/sferes2/sferes2.git
+[submodule "deps/robot_dart"]
+	path = deps/robot_dart
+	url = https://github.com/riturajkaushik/robot_dart.git
